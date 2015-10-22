@@ -26,40 +26,46 @@ var parseDHCPLeases = function parseDHCPLeases() {
 	leaseFileContent = leaseFileContent.replace(/\#/g,"");	
 	leaseFileContent = leaseFileContent.trim();
 	leaseFileContent = leaseFileContent.substring(leaseFileContent.indexOf("lease"), leaseFileContent.length)		
-	var splittedContent = leaseFileContent.split("{");
+	var splittedContent = leaseFileContent.split("\n");
 	var ipsDictionary = [];
 	var ip = "";
 	var start = "";
-	var end = "";	
+	var end = "";
+	var cont = 0;
 	for(var i = 0; i < splittedContent.length; i++) {
-		var splittedNewLine = splittedContent[i].split("\n");
-		if(splittedNewLine.length == 1 && splittedNewLine[0].indexOf("lease") >= 0) {
-			ip = splittedNewLine[0].substring(splittedNewLine[0].indexOf("lease") + 5, splittedNewLine[0].length-1);			
-			ip = ip.trim();			
-			continue;
+		if(splittedContent[i].indexOf("lease") >= 0) {
+			ip = splittedContent[i].substring(splittedContent[i].indexOf("lease") + 5, splittedContent[i].length-1);			
+			ip = ip.trim();
+			cont += 1;
 		}
-		if(splittedNewLine.length > 1){
-			//					
-			console.log("[0] >> " + splittedNewLine[1]);
-			start = splittedNewLine[1].substring(splittedNewLine[1].indexOf("2015"), splittedNewLine[1].length-1);
-			console.log(start);
-			//
-			console.log("[1] >> " + splittedNewLine[2]);
-			end = splittedNewLine[2].substring(splittedNewLine[2].indexOf("2015"), splittedNewLine[2].length-1);
-			console.log(end);
-			//			
-			var timeDiff = ((new Date()).getTime() - (new Date(end)).getTime());
-			var dateDiff = Math.ceil(timeDiff / (1000 * 3600));		
+		if(splittedContent[i].indexOf("starts") >= 0) {
+			start = splittedContent[i].substring(splittedContent[i].indexOf("2015"), splittedContent[i].indexOf(";"));
+			cont += 1;
+		}
+		if(splittedContent[i].indexOf("ends") >= 0) {
+			end = splittedContent[i].substring(splittedContent[i].indexOf("2015"), splittedContent[i].indexOf(";"));
+			cont += 1;
+		}
+		if(cont == 3) {
+			var startDate = (new Date());
+			var endDate = (new Date(end));
+			console.log("Start date: > " + startDate);
+			console.log("End date: > " + endDate);
+			var timeDiff = (endDate.getTime() - startDate.getTime());
+			console.log("timeDiff: > " + timeDiff);
+			var dateDiff = Math.floor(timeDiff / (1000 * 60));		
+			console.log("dateDiff: > " + dateDiff);
 			ipsDictionary.push({
 				"ip": ip,
 				"start":start,
 				"end":end,
 				"diff":dateDiff,
-				"expired": dateDiff <= 0 ? true : false,
+				"expired": timeDiff <= 0 ? true : false,
 			});
+			cont = 0;
 		}
 		
-	}	
+	}
 	return ipsDictionary;
 }
 
