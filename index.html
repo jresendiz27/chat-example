@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Simple DHCP Monitor</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }      
@@ -21,7 +21,15 @@
         $('#content').html(msg);
       });
       socket.on('refreshTimes', function(msg){                
-        $('#times').html(msg);
+        var timesObject = msg;        
+        $('#times').html("");  
+        $('#times').append("<table>");  
+        $('#times').append("<tr><td>IP</td><td>Inicio</td><td>Fin</td></tr>");
+        for(var i=0; i < timesObject.length; i++) {
+          $('#times').append("<tr><td> "+timesObject[i].ip+"&nbsp; </td><td> "+timesObject[i].start+"&nbsp; </td><td> "+timesObject[i].end+"&nbsp; </td></tr>");  
+        }
+        $('#times').append("</table>");
+        
       });
       
     </script>

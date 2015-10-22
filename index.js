@@ -13,16 +13,16 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
   setInterval(function htmlOutputFile() {
+  	dhcp.refreshHtmlContent();
   	fs.readFile(dhcp.htmlOutputFile, 'utf8', function (err, data) {
 	  if (err) throw err;	  
 	  io.emit("refreshContent", data);
 	});	
   }, 3007);
   setInterval(function dhcpLeases(){
-  	//var data = dhcp.replaceHtmlContent();
-  	var data = ">> " + Math.random();
+  	var data = dhcp.parseDHCPLeases();
   	io.emit("refreshTimes", data);  	
-  }, 2991);
+  }, 7001);
 });
 
 http.listen(3000, function(){
