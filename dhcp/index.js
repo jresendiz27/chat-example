@@ -25,27 +25,40 @@ var parseDHCPLeases = function parseDHCPLeases() {
 	leaseFileContent = leaseFileContent.replace(" This lease file was written by isc-dhcp-4.1-ESV-R4","");	
 	leaseFileContent = leaseFileContent.replace(/\#/g,"");	
 	leaseFileContent = leaseFileContent.trim();
-
-	var splittedContent = leaseFileContent.split("}");
+	leaseFileContent = leaseFileContent.substring(leaseFileContent.indexOf("lease"), leaseFileContent.length)		
+	var splittedContent = leaseFileContent.split("{");
 	var ipsDictionary = [];
 	var ip = "";
 	var start = "";
 	var end = "";	
-	for(var i = 0; i < splittedContent.length - 1; i++) {
-		if(splittedContent[i].indexOf("{")){
-			var splittedNewLine = splittedContent[i].trim().split("\n");
+	for(var i = 0; i < splittedContent.length; i++) {
+		var splittedNewLine = splittedContent[i].split("\n");
+		if(splittedNewLine.length == 1 && splittedNewLine[0].indexOf("lease") >= 0) {
+			ip = splittedNewLine[0].substring(splittedNewLine[0].indexOf("lease") + 5, splittedNewLine[0].length-1);			
+			ip = ip.trim();			
+			continue;
+		}
+		if(splittedNewLine.length > 1){
+			//					
+			console.log("[0] >> " + splittedNewLine[1]);
+			start = splittedNewLine[1].substring(splittedNewLine[1].indexOf("2015"), splittedNewLine[1].length-1);
+			console.log(start);
 			//
-			ip = splittedNewLine[0].replace("{","");
-			ip = ip.replace("lease","");
-			ip = ip.trim();					
+			console.log("[1] >> " + splittedNewLine[2]);
+			end = splittedNewLine[2].substring(splittedNewLine[2].indexOf("2015"), splittedNewLine[2].length-1);
+			console.log(end);
 			//			
-			start = splittedNewLine[1].substring(splittedNewLine[1].indexOf("2015"), splittedNewLine[1].length)			
-			//
-			end = splittedNewLine[2].replace(";","");
-			end = start.replace(/ends [0-9]+/,"");
-			end = start.trim();
-			ipsDictionary.push({ "ip": ip,"start":start,"end":end });
-		}		
+			var timeDiff = ((new Date()).getTime() - (new Date(end)).getTime());
+			var dateDiff = Math.ceil(timeDiff / (1000 * 3600));		
+			ipsDictionary.push({
+				"ip": ip,
+				"start":start,
+				"end":end,
+				"diff":dateDiff,
+				"expired": dateDiff <= 0 ? true : false,
+			});
+		}
+		
 	}	
 	return ipsDictionary;
 }
