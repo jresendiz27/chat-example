@@ -7,22 +7,22 @@ var fs = require('fs');
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
+app.get('/jquery/jquery.js', function(req, res){
+  res.sendFile(__dirname + '/jquery.js');
+});
 
-io.on('connection', function(socket){  
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
+io.on('connection', function(socket){    
   setInterval(function htmlOutputFile() {
   	dhcp.refreshHtmlContent();
   	fs.readFile(dhcp.htmlOutputFile, 'utf8', function (err, data) {
 	  if (err) throw err;	  
 	  io.emit("refreshContent", data);
 	});	
-  }, 3007);
+  }, 2009);
   setInterval(function dhcpLeases(){
   	var data = dhcp.parseDHCPLeases();
   	io.emit("refreshTimes", data);  	
-  }, 7001);
+  }, 3007);
 });
 
 http.listen(3000, function(){
