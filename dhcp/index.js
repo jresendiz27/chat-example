@@ -49,12 +49,8 @@ var parseDHCPLeases = function parseDHCPLeases() {
 		if(cont == 3) {
 			var startDate = (new Date());
 			var endDate = (new Date(end));
-			console.log("Start date: > " + startDate);
-			console.log("End date: > " + endDate);
 			var timeDiff = (endDate.getTime() - startDate.getTime());
-			console.log("timeDiff: > " + timeDiff);
-			var dateDiff = Math.floor(timeDiff / (1000 * 60));		
-			console.log("dateDiff: > " + dateDiff);
+			var dateDiff = Math.floor(timeDiff / (1000 * 60));
 			ipsDictionary.push({
 				"ip": ip,
 				"start":start,
